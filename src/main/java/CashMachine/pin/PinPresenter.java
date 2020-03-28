@@ -39,7 +39,7 @@ public class PinPresenter implements PinContract.Presenter {
 
     @Override
     public void onPinConfirmed(String pin) {
-        if (pin.contains(CORRECT_PIN.trim())) {
+        if (pin.equals(CORRECT_PIN.trim())) {
             view.enableConfirmButton();
             view.hideError();
             view.correctPin();

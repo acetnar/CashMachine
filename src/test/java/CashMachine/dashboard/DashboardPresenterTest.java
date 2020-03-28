@@ -27,7 +27,7 @@ class DashboardPresenterTest {
     public void getLastCash() {
         when(machineStorage.availableMoney()).thenReturn(Arrays.asList(Cash.BANK_NOTE_50, Cash.BANK_NOTE_20));
 
-        presenter.getCash(50);
+        presenter.getCash("50");
 
         verify(view).onWithdrawalConfirm(Arrays.asList(Cash.BANK_NOTE_50, Cash.BANK_NOTE_20));
     }

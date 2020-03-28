@@ -5,17 +5,13 @@ import CashMachine.wrong.WrongPinScreen;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 public class PinScreen extends BaseSwingScreen implements PinContract.View {
     private JPasswordField passwordField;
     private final JLabel message;
     private final JButton confirm;
 
-    //todo zamiast null przekaz this - co powinna implementowac ta klasa? - czy dobrze?????
     private final PinContract.Presenter presenter = new PinPresenter(this);
     private final ScreenListener listener;
 
@@ -28,42 +24,33 @@ public class PinScreen extends BaseSwingScreen implements PinContract.View {
 
         frame.add(new Label("Pin:"));
         passwordField = new JPasswordField();
-        //todo ZROBIONE??? nas�uchuj wpisywania hasla i daj znac presenterowi
-        passwordField.addActionListener(e -> presenter.onPinTyping(passwordField.getSelectedText()));
         frame.add(passwordField);
+        passwordField.addKeyListener(new KeyAdapter() {
+            String password = "";
 
-        message = new JLabel();//todo kontrolka do komunikat�w o bledzie
-        message.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                presenter.onPinTyping(message.getText());
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
+                if (e.getKeyChar() == '\b') {
+                    if (password.length() != 0) {
+                        password = password.substring(0, password.length() - 1);
+                        presenter.onPinTyping(password);
+                    }
+                } else if (password.length() < 10) {
+                    password += e.getKeyChar();
+                    presenter.onPinTyping(password.trim());
+                }
             }
         });
 
+
+        message = new JLabel();
         frame.add(message);
 
         confirm = new JButton("Confirm");
-//        confirm.addActionListener(new ActionListener(passwordField) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                presenter.onPinTyping(passwordField.getSelectedText().);
-        // confirm.addActionListener(listener.onCorrectPin(""));
-
-        //todo daj znac presenter o kliknieciu zamiast prosto do listener
-        // listener.onCorrectPin();
-//                listener.onWrongPin();
-
+        confirm.setEnabled(false);
+        confirm.addActionListener(e -> presenter.onPinConfirmed(String.copyValueOf(passwordField.getPassword()).trim()));
         frame.add(confirm);
+
     }
 
     @Override
